@@ -250,11 +250,12 @@ public class AssSfxTableModel extends javax.swing.table.AbstractTableModel {
     }
     
     public void setColumnSize(JTable table){
-        TableColumnModel tblColumnModel = table.getColumnModel();
+        final TableColumnModel tblColumnModel = table.getColumnModel();
+        int maxTableWidth = table.getWidth();
         
-        tblColumnModel.getColumn(0).setWidth(40); // Type
-        tblColumnModel.getColumn(1).setWidth(40); // Layer
-        tblColumnModel.getColumn(2).setWidth(500); // Text
+        tblColumnModel.getColumn(0).setPreferredWidth(40); maxTableWidth -= 40; // Type
+        tblColumnModel.getColumn(1).setPreferredWidth(40); maxTableWidth -= 40; // Layer
+        tblColumnModel.getColumn(2).setPreferredWidth(maxTableWidth); // Text
     }
     
     public enum TextMode {
