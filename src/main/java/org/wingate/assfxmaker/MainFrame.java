@@ -20,6 +20,7 @@ import java.io.File;
 import javax.swing.JFileChooser;
 import javax.swing.filechooser.FileFilter;
 import org.wingate.assfxmaker.ass.ASS;
+import org.wingate.assfxmaker.ass.AssEvent;
 import org.wingate.assfxmaker.ui.AssSfxTableModel;
 
 /**
@@ -319,7 +320,15 @@ public class MainFrame extends javax.swing.JFrame {
         int z = fcASS.showOpenDialog(this);
         if(z == JFileChooser.APPROVE_OPTION){
             orginModel.removeAll();
-            orginModel.setAss(ASS.Read(fcASS.getSelectedFile().getPath()));
+            ASS all = ASS.Read(fcASS.getSelectedFile().getPath());
+            ASS karaOnlyAss = all;
+            for(int i=karaOnlyAss.getEvents().size() - 1; i>=0; i--){
+                String text = karaOnlyAss.getEvents().get(i).getText();
+                if(text.toLowerCase().contains("{\\k") == false){
+                    karaOnlyAss.getEvents().remove(i);
+                }
+            }
+            orginModel.setAss(karaOnlyAss);
             tblOrigin.updateUI();
         }
     }//GEN-LAST:event_mnuFileOpenActionPerformed
