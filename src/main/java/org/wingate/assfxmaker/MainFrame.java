@@ -17,11 +17,13 @@
 package org.wingate.assfxmaker;
 
 import java.io.File;
+import javax.swing.DefaultListModel;
 import javax.swing.JFileChooser;
 import javax.swing.filechooser.FileFilter;
 import org.wingate.assfxmaker.ass.ASS;
-import org.wingate.assfxmaker.ass.AssEvent;
+import org.wingate.assfxmaker.sfx.AfmLegacy;
 import org.wingate.assfxmaker.ui.AssSfxTableModel;
+import org.wingate.assfxmaker.ui.SfxListCellRenderer;
 
 /**
  *
@@ -35,6 +37,9 @@ public class MainFrame extends javax.swing.JFrame {
     
     private final AssSfxTableModel orginModel = new AssSfxTableModel();
     private final AssSfxTableModel generatedModel = new AssSfxTableModel();
+    
+    private final DefaultListModel dlmSFX = new DefaultListModel();    
+    private final SfxListCellRenderer sfxTreeCellRenderer = new SfxListCellRenderer();
 
     /**
      * Creates new form MainFrame
@@ -73,8 +78,10 @@ public class MainFrame extends javax.swing.JFrame {
             public String getDescription() {
                 return "ASS files";
             }
-            
         });
+        
+        mf.listSFXChoice.setModel(mf.dlmSFX);
+        mf.listSFXChoice.setCellRenderer(mf.sfxTreeCellRenderer);
         
         //- INIT END -
         
@@ -122,10 +129,14 @@ public class MainFrame extends javax.swing.JFrame {
         panResult = new javax.swing.JPanel();
         jScrollPane2 = new javax.swing.JScrollPane();
         tblGenerated = new javax.swing.JTable();
-        panBottom = new javax.swing.JPanel();
-        jTabbedPane2 = new javax.swing.JTabbedPane();
-        jPanel1 = new javax.swing.JPanel();
-        jPanel2 = new javax.swing.JPanel();
+        panSFX = new javax.swing.JPanel();
+        panSFXTree = new javax.swing.JPanel();
+        btnUseChosenSFX = new javax.swing.JButton();
+        btnCreatePreset = new javax.swing.JButton();
+        btnCreateCode = new javax.swing.JButton();
+        jScrollPane4 = new javax.swing.JScrollPane();
+        listSFXChoice = new javax.swing.JList<>();
+        panSFXCreator = new javax.swing.JPanel();
         panDrawing = new javax.swing.JPanel();
         jMenuBar1 = new javax.swing.JMenuBar();
         mnuFile = new javax.swing.JMenu();
@@ -133,7 +144,6 @@ public class MainFrame extends javax.swing.JFrame {
         mnuFileSave = new javax.swing.JMenuItem();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
-        getContentPane().setLayout(new java.awt.BorderLayout());
 
         panKaraoke.setLayout(new java.awt.BorderLayout());
 
@@ -225,38 +235,77 @@ public class MainFrame extends javax.swing.JFrame {
 
         panKaraoke.add(panTop, java.awt.BorderLayout.CENTER);
 
-        panBottom.setPreferredSize(new java.awt.Dimension(883, 400));
-        panBottom.setLayout(new java.awt.BorderLayout());
+        panSFX.setPreferredSize(new java.awt.Dimension(0, 200));
+        panSFX.setLayout(new java.awt.GridLayout(1, 2));
 
-        javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
-        jPanel1.setLayout(jPanel1Layout);
-        jPanel1Layout.setHorizontalGroup(
-            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 0, Short.MAX_VALUE)
+        btnUseChosenSFX.setText("Use -->");
+
+        btnCreatePreset.setText("Create a preset");
+        btnCreatePreset.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnCreatePresetActionPerformed(evt);
+            }
+        });
+
+        btnCreateCode.setText("Create with code");
+        btnCreateCode.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnCreateCodeActionPerformed(evt);
+            }
+        });
+
+        listSFXChoice.setModel(new javax.swing.AbstractListModel<String>() {
+            String[] strings = { "Item 1", "Item 2", "Item 3", "Item 4", "Item 5" };
+            public int getSize() { return strings.length; }
+            public String getElementAt(int i) { return strings[i]; }
+        });
+        jScrollPane4.setViewportView(listSFXChoice);
+
+        javax.swing.GroupLayout panSFXTreeLayout = new javax.swing.GroupLayout(panSFXTree);
+        panSFXTree.setLayout(panSFXTreeLayout);
+        panSFXTreeLayout.setHorizontalGroup(
+            panSFXTreeLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(panSFXTreeLayout.createSequentialGroup()
+                .addContainerGap()
+                .addGroup(panSFXTreeLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jScrollPane4)
+                    .addGroup(panSFXTreeLayout.createSequentialGroup()
+                        .addComponent(btnCreatePreset)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(btnCreateCode)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 93, Short.MAX_VALUE)
+                        .addComponent(btnUseChosenSFX)))
+                .addContainerGap())
         );
-        jPanel1Layout.setVerticalGroup(
-            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 0, Short.MAX_VALUE)
+        panSFXTreeLayout.setVerticalGroup(
+            panSFXTreeLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, panSFXTreeLayout.createSequentialGroup()
+                .addContainerGap()
+                .addGroup(panSFXTreeLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(btnUseChosenSFX)
+                    .addComponent(btnCreatePreset)
+                    .addComponent(btnCreateCode))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jScrollPane4, javax.swing.GroupLayout.DEFAULT_SIZE, 160, Short.MAX_VALUE)
+                .addContainerGap())
         );
 
-        jTabbedPane2.addTab("Effects", jPanel1);
+        panSFX.add(panSFXTree);
 
-        javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
-        jPanel2.setLayout(jPanel2Layout);
-        jPanel2Layout.setHorizontalGroup(
-            jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 0, Short.MAX_VALUE)
+        javax.swing.GroupLayout panSFXCreatorLayout = new javax.swing.GroupLayout(panSFXCreator);
+        panSFXCreator.setLayout(panSFXCreatorLayout);
+        panSFXCreatorLayout.setHorizontalGroup(
+            panSFXCreatorLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 410, Short.MAX_VALUE)
         );
-        jPanel2Layout.setVerticalGroup(
-            jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 0, Short.MAX_VALUE)
+        panSFXCreatorLayout.setVerticalGroup(
+            panSFXCreatorLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 200, Short.MAX_VALUE)
         );
 
-        jTabbedPane2.addTab("Code", jPanel2);
+        panSFX.add(panSFXCreator);
 
-        panBottom.add(jTabbedPane2, java.awt.BorderLayout.CENTER);
-
-        panKaraoke.add(panBottom, java.awt.BorderLayout.SOUTH);
+        panKaraoke.add(panSFX, java.awt.BorderLayout.SOUTH);
 
         jTabbedPane1.addTab("Karaoke", panKaraoke);
 
@@ -264,11 +313,11 @@ public class MainFrame extends javax.swing.JFrame {
         panDrawing.setLayout(panDrawingLayout);
         panDrawingLayout.setHorizontalGroup(
             panDrawingLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 904, Short.MAX_VALUE)
+            .addGap(0, 821, Short.MAX_VALUE)
         );
         panDrawingLayout.setVerticalGroup(
             panDrawingLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 555, Short.MAX_VALUE)
+            .addGap(0, 547, Short.MAX_VALUE)
         );
 
         jTabbedPane1.addTab("Drawing", panDrawing);
@@ -340,6 +389,14 @@ public class MainFrame extends javax.swing.JFrame {
         }
     }//GEN-LAST:event_mnuFileSaveActionPerformed
 
+    private void btnCreatePresetActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCreatePresetActionPerformed
+        dlmSFX.addElement(new AfmLegacy(AfmLegacy.Type.AFM, "Rouge", "Me", "v1.0", "Fade out"));
+    }//GEN-LAST:event_btnCreatePresetActionPerformed
+
+    private void btnCreateCodeActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCreateCodeActionPerformed
+        dlmSFX.addElement(new AfmLegacy(AfmLegacy.Type.JavaScript, "RougeJS", "Me", "v2.0", "Fade in"));
+    }//GEN-LAST:event_btnCreateCodeActionPerformed
+
     /**
      * @param args the command line arguments
      */
@@ -369,23 +426,27 @@ public class MainFrame extends javax.swing.JFrame {
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.ButtonGroup bgTextMode;
+    private javax.swing.JButton btnCreateCode;
+    private javax.swing.JButton btnCreatePreset;
+    private javax.swing.JButton btnUseChosenSFX;
     private javax.swing.JFileChooser fcASS;
     private javax.swing.JMenuBar jMenuBar1;
-    private javax.swing.JPanel jPanel1;
-    private javax.swing.JPanel jPanel2;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane2;
+    private javax.swing.JScrollPane jScrollPane4;
     private javax.swing.JTabbedPane jTabbedPane1;
-    private javax.swing.JTabbedPane jTabbedPane2;
     private javax.swing.JToolBar jToolBar1;
+    private javax.swing.JList<String> listSFXChoice;
     private javax.swing.JMenu mnuFile;
     private javax.swing.JMenuItem mnuFileOpen;
     private javax.swing.JMenuItem mnuFileSave;
-    private javax.swing.JPanel panBottom;
     private javax.swing.JPanel panDrawing;
     private javax.swing.JPanel panKaraoke;
     private javax.swing.JPanel panOriginal;
     private javax.swing.JPanel panResult;
+    private javax.swing.JPanel panSFX;
+    private javax.swing.JPanel panSFXCreator;
+    private javax.swing.JPanel panSFXTree;
     private javax.swing.JPanel panTop;
     private javax.swing.JTable tblGenerated;
     private javax.swing.JTable tblOrigin;
